@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: campusos-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: ENVIRONMENT
+        value: production
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "http://localhost:3000,http://127.0.0.1:3000"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: "gemini-3.8-flash"
+      - key: SUPABASE_URL
+        value: "https://gfkunutisfqnaggampxm.supabase.co"
+      - key: SUPABASE_ANON_KEY
+        value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdma3VudXRpc2ZxbmFnZ2FtcHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2NjkzODMsImV4cCI6MjEwODI0NTM4M30.253xIU_0ZO_f43BBY_F9qrPmLTykAyky_1CiyQqpYEc"
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdma3VudXRpc2ZxbmFnZ2FtcHhtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MjY2OTM4MywiZXhwIjoyMTA4MjQ1MzgzfQ.SzrYjp6fPBV6W9ro_v_Byibqj9zVOQ7lXhrETr8wXJI"
