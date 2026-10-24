@@ -88,8 +88,25 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     ident = (payload.identifier or payload.college_id or "").strip() or None
     user = None
 
-    # 1. If both roll_number and name are supplied, search for exact student
-    if roll and name:
+    # 1. Search by roll_number first if supplied (Roll Number is unique)
+    if roll:
+        student = (
+            db.query(StudentProfile)
+            .filter((StudentProfile.roll_number.ilike(roll)) | (StudentProfile.enrollment_no.ilike(roll)))
+            .first()
+        )
+        if not student and len(roll) >= 6:
+            # Fuzzy match on last 6 digits in case of batch year prefix typo (e.g. 21 vs 25)
+            student = (
+                db.query(StudentProfile)
+                .filter(StudentProfile.roll_number.ilike(f"%{roll[-6:]}%"))
+                .first()
+            )
+        if student and student.user:
+            user = student.user
+
+    # 2. If no student found by roll and both roll & name were supplied, try matching both
+    if not user and roll and name:
         student = (
             db.query(StudentProfile)
             .filter(
@@ -101,17 +118,7 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
         if student and student.user:
             user = student.user
 
-    # 2. If roll_number alone is supplied
-    if not user and roll:
-        student = (
-            db.query(StudentProfile)
-            .filter((StudentProfile.roll_number.ilike(roll)) | (StudentProfile.enrollment_no.ilike(roll)))
-            .first()
-        )
-        if student and student.user:
-            user = student.user
-
-    # 3. If name alone is supplied
+    # 3. If name alone is supplied (or roll didn't match)
     if not user and name:
         student = (
             db.query(StudentProfile)

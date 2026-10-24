@@ -64,26 +64,19 @@ export const LoginPage: React.FC = () => {
     const cleanRoll = rollNumber.trim().toLowerCase();
     const cleanName = studentName.trim().toLowerCase();
 
-    if (cleanRoll && cleanName) {
-      return (
-        enrolledStudents.find(
-          (s) =>
-            (s.rollNumber.toLowerCase() === cleanRoll || s.collegeId.toLowerCase() === cleanRoll) &&
-            s.name.toLowerCase().includes(cleanName)
-        ) ||
+    // Priority 1: Match by Roll Number (exact or last 6 digits for batch prefix tolerance)
+    if (cleanRoll) {
+      const matchRoll =
         enrolledStudents.find(
           (s) => s.rollNumber.toLowerCase() === cleanRoll || s.collegeId.toLowerCase() === cleanRoll
         ) ||
-        enrolledStudents.find((s) => s.name.toLowerCase().includes(cleanName))
-      );
+        (cleanRoll.length >= 6
+          ? enrolledStudents.find((s) => s.rollNumber.toLowerCase().includes(cleanRoll.slice(-6)))
+          : null);
+      if (matchRoll) return matchRoll;
     }
 
-    if (cleanRoll) {
-      return enrolledStudents.find(
-        (s) => s.rollNumber.toLowerCase() === cleanRoll || s.collegeId.toLowerCase() === cleanRoll
-      );
-    }
-
+    // Priority 2: Match by Name
     if (cleanName) {
       return (
         enrolledStudents.find((s) => s.name.toLowerCase() === cleanName) ||
@@ -124,7 +117,13 @@ export const LoginPage: React.FC = () => {
         const cleanRoll = rollNumber.trim();
         const cleanName = studentName.trim();
 
-        if (cleanRoll || cleanName) {
+        if (matchedStudent) {
+          await authService.login({
+            rollNumber: matchedStudent.rollNumber,
+            name: matchedStudent.name,
+            role: 'student',
+          });
+        } else if (cleanRoll || cleanName) {
           await authService.login({
             rollNumber: cleanRoll || undefined,
             name: cleanName || undefined,
@@ -260,8 +259,18 @@ export const LoginPage: React.FC = () => {
                     type="text"
                     value={rollNumber}
                     onChange={(e) => {
-                      setRollNumber(e.target.value);
+                      const val = e.target.value;
+                      setRollNumber(val);
                       setErrorMessage(null);
+                      const clean = val.trim().toLowerCase();
+                      if (clean) {
+                        const found = enrolledStudents.find(
+                          (s) => s.rollNumber.toLowerCase() === clean || (clean.length >= 6 && s.rollNumber.toLowerCase().includes(clean.slice(-6)))
+                        );
+                        if (found) {
+                          setStudentName(found.name);
+                        }
+                      }
                     }}
                     placeholder="e.g. 2101920100142 or 2501920100012"
                     className="w-full pl-9 pr-3 py-2 text-xs font-mono bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-slate-900 placeholder-slate-400"

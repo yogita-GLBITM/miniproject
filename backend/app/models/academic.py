@@ -64,18 +64,18 @@ class SubjectMarks(Base):
     @property
     def total_percentage(self) -> float:
         total_scored = (
-            self.sessional1_scored +
-            self.sessional2_scored +
-            self.quizzes_scored +
-            self.assignments_scored +
+            (self.sessional1_scored or 0.0) +
+            (self.sessional2_scored or 0.0) +
+            (self.quizzes_scored or 0.0) +
+            (self.assignments_scored or 0.0) +
             (self.practicals_scored or 0.0)
         )
         total_max = (
-            self.sessional1_max +
-            self.sessional2_max +
-            self.quizzes_max +
-            self.assignments_max +
-            (self.practicals_max or 0.0)
+            (self.sessional1_max or 30.0) +
+            (self.sessional2_max or 30.0) +
+            (self.quizzes_max or 10.0) +
+            (self.assignments_max or 10.0) +
+            (self.practicals_max or 20.0)
         )
         if total_max <= 0:
             return 0.0
