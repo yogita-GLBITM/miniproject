@@ -74,7 +74,7 @@ export const AttendanceHealthCard: React.FC<AttendanceHealthCardProps> = ({
               Attendance Insight
             </h4>
             <p className="text-xs text-amber-900 leading-relaxed font-medium">
-              {summary.insight.message}
+              {summary?.insight?.message || 'Attendance records synchronized. Maintain attendance above 75% for exam eligibility.'}
             </p>
             <div className="pt-2 flex items-center gap-3">
               <button

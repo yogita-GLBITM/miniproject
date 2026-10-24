@@ -20,7 +20,10 @@ import { mockAdminStats, mockDepartmentMetrics } from '../data/mock/mockAdmin';
 import { mockNotificationsList } from '../data/mock/mockNotifications';
 import { mockAcademicRiskReport, mockDefaultStudyPlan, mockSuggestedPrompts, mockCopilotContexts, mockInitialChatHistory } from '../data/mock/mockAI';
 
-export const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+const rawBaseUrl = String((import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:8000/api/v1').trim();
+export const API_BASE_URL = rawBaseUrl.endsWith('/api/v1')
+  ? rawBaseUrl
+  : `${rawBaseUrl.replace(/\/+$/, '')}/api/v1`;
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -111,12 +114,20 @@ function getMockFallbackForEndpoint(endpoint: string, options: RequestInit = {})
   // Attendance
   if (norm.includes('/attendance/summary')) {
     return {
-      overallPercentage: 81.4,
-      totalAttended: 247,
-      totalConducted: 303,
-      subjectsAtRisk: 1,
-      subjectsSafe: 4,
-      eligibilityStatus: 'Eligible for End-Sem Exam',
+      overallPercentage: 78.7,
+      totalClasses: 122,
+      classesAttended: 96,
+      classesMissed: 26,
+      subjectsAtRiskCount: 1,
+      targetRequirement: 75.0,
+      totalAttendedClasses: 96,
+      totalConductedClasses: 122,
+      insight: {
+        subject: 'Database Management Systems',
+        currentPercentage: 73.1,
+        classesNeeded: 2,
+        message: 'Database Management Systems is at 73.1%, below the mandatory 75% threshold. Attend the next 2 classes to regain safe status.'
+      }
     };
   }
 

@@ -180,7 +180,7 @@ export const AttendancePage: React.FC = () => {
         </div>
 
         {/* Insight Callout */}
-        {summary.insight && (
+        {summary?.insight && (
           <div className="mt-5 pt-4 border-t border-slate-100 flex items-start gap-3 text-xs bg-slate-50/80 p-3 rounded-xl">
             <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
             <div className="space-y-0.5 text-slate-700">

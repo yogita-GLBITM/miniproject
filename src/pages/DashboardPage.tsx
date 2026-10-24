@@ -87,6 +87,13 @@ export const DashboardPage: React.FC = () => {
             classesMissed: 13,
             subjectsAtRiskCount: 1,
             safeMarginClasses: 3,
+            targetRequirement: 75.0,
+            insight: {
+              subject: 'Database Management Systems',
+              currentPercentage: 73.0,
+              classesNeeded: 2,
+              message: 'Attend next 2 DBMS lectures to cross the mandatory 75% eligibility threshold.'
+            }
           });
         }
 
